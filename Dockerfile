@@ -1,21 +1,29 @@
-# Используем официальный образ Python (3.10-slim)
-FROM python:3.10-slim
+# Этап сборки и тестирования
+FROM python:3.10-slim AS builder
 
-# Задаём рабочую директорию
 WORKDIR /app
 
-# Копируем файл с зависимостями (создайте его, если отсутствует)
+# Копируем зависимости и устанавливаем их
 COPY requirements.txt /app/requirements.txt
-
-# Устанавливаем зависимости
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Копируем весь код проекта в контейнер
+# Копируем весь исходный код в контейнер
 COPY . /app
 
-# Открываем порт 80 для доступа
+# Запускаем тесты. Если тесты не пройдут, сборка завершится с ошибкой.
+RUN pytest test_app.py
+
+# Финальный этап: создаём минимальный образ для запуска приложения
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# Копируем установленные зависимости и исходный код из этапа builder
+COPY --from=builder /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
+COPY --from=builder /app /app
+
 EXPOSE 80
 
-# Запускаем приложение через Uvicorn
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
+# Запускаем приложение через uvicorn, используя python -m uvicorn
+CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
 

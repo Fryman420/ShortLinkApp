@@ -61,7 +61,7 @@ def test_get_stats_caching():
     clicks_initial = stats_data["clicks"]
 
     # Имитируем клик по ссылке. Отключаем автоматическое следование редиректам.
-    response_redirect = client.get(f"/links/{short_code}", allow_redirects=False)
+    response_redirect = client.get(f"/links/{short_code}", follow_redirects=False)
     assert response_redirect.status_code == 302
 
     # Проверяем, что кэшированное значение не изменилось.
