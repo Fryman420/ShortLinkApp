@@ -4,4 +4,5 @@ sqlalchemy
 pydantic
 passlib[bcrypt]
 pytest
-
+python-multipart
+httpx
