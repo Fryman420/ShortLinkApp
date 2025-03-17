@@ -12,4 +12,4 @@ docker run -d -p 80:80 shortlink
 ```
 docker run --rm shortlink python -m pytest test_app.py
 ```
-ссылка http://158.160.94.156/
+ссылка http://shortlink.dreamsofelectricsheep.com
